@@ -1,10 +1,4 @@
 //Title:  Paddle Ball
-//Purpose: To learn how to create a basic video game using HTML and JavaScript.  
-//Remarks: I learned how to create this game from an introduction to game development course on Udemy
-//and performed some modifications of my own to make it more user friendly.
-//If you have any suggestions to improve the quality of this game, I am open to new ideas.  
-//Thanks!
-  
 <html>
 
 <canvas id = "gameCanvas" width = "800" height = "600"></canvas>
@@ -54,9 +48,6 @@ window.onload = function() {
       alert("Welcome to Paddle Ball!");
       alert("The object of the game is to score points by hitting the ball with a paddle past your opponent's boundary.");
       alert("The player who scores 7 points and has at least 2 points more than their opponent wins the game.");
-
-      var level = document.createElement("LEVEL");
-      level.setAttribute("type", "button");
 
       //Initializes the framesPerSecond variable and sets the interval to draw and move the game elements.  
       var framesPerSecond = 30;
