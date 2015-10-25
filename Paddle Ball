@@ -1,0 +1,226 @@
+//Title:  Paddle Ball
+//Purpose: To learn how to create a basic video game using HTML and JavaScript.  
+//Remarks: I learned how to create this game from an introduction to game development course on Udemy
+//and performed some modifications of my own to make it more user friendly.
+//If you have any suggestions to improve the quality of this game, I am open to new ideas.  
+//Thanks!
+  
+<html>
+
+<canvas id = "gameCanvas" width = "800" height = "600"></canvas>
+
+<script>
+
+//Declare the canvas variables.
+var canvas;
+var canvasContext;
+
+//Declare and initialize the ball position and speed variables.
+var ballX = 50;
+var ballY = 50;
+var ballSpeedX = 5;
+var ballSpeedY = 5;
+
+//Declare and initialize the paddle position variables and the paddle height and thickness constants.
+var paddle1Y = 250;
+var paddle2Y = 250;
+const PADDLE_HEIGHT = 100;
+const PADDLE_THICKNESS = 10;
+
+//Declare and initialize the player1 and player2 scores and the winning score constant.  
+var player1Score = 0;
+var player2Score = 0;
+const WINNING_SCORE = 7;
+
+
+//Declare winning screen variable as false.
+var showingWinScreen = false;
+
+//This function starts a new game when the user clicks the mouse after the game is over.
+function handleMouseClick(event) {
+	if(showingWinScreen){
+ 	   player1Score = 0;
+           player2Score = 0;
+           showingWinScreen = false;    
+        }
+}
+
+//This function loads all of the game elements on the screen.
+window.onload = function() {
+      //Gets the gameCanvas ID
+      canvas = document.getElementById('gameCanvas');
+      canvasContext = canvas.getContext('2d');
+
+      alert("Welcome to Paddle Ball!");
+      alert("The object of the game is to score points by hitting the ball with a paddle past your opponent's boundary.");
+      alert("The player who scores 7 points and has at least 2 points more than their opponent wins the game.");
+
+      var level = document.createElement("LEVEL");
+      level.setAttribute("type", "button");
+
+      //Initializes the framesPerSecond variable and sets the interval to draw and move the game elements.  
+      var framesPerSecond = 30;
+      setInterval(function() {
+                    moveEverything(); 
+                    drawEverything();
+                  }, 
+                  1000 / framesPerSecond);
+
+      //Event listener for the mouse to move the paddle up and down.
+      canvas.addEventListener('mousemove', 
+                              function(event) { 
+                                 var mousePosition = calculateMousePosition(event); 
+                                 paddle1Y = mousePosition.y - (PADDLE_HEIGHT / 2); 
+                               });
+
+      //Event listener for the mouse when user clicks the mouse button.
+      canvas.addEventListener('mousedown', handleMouseClick);
+                          
+}
+
+//This function calculates the mouse position.  
+function calculateMousePosition(event) {
+	var rect = canvas.getBoundingClientRect();
+        var root = document.documentElement;
+        var mouseX = event.clientX - rect.left - root.scrollLeft;
+        var mouseY = event.clientY - rect.top - root.scrollTop;
+        return {
+	  x: mouseX,
+          y: mouseY
+        };
+}
+
+//This function controls the computer's paddle movements.
+function computerMovement() {
+        var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT / 2);
+	if(paddle2YCenter < ballY - 30) {
+       	   paddle2Y = paddle2Y + 12;
+        } else if(paddle2YCenter > ballY + 30){
+           paddle2Y = paddle2Y - 12;
+        }
+}
+
+//This function controls the ball's movements when it bounces off the top and bottom boundaries
+//and when it clears the left and right boundaries of the playing court.  
+function moveEverything() {
+      
+        //Calls the computerMovement function.
+	computerMovement();
+
+        //Position of the ball in the X and Y directions.
+	ballX = ballX + ballSpeedX;
+        ballY = ballY + ballSpeedY;
+
+        //If the ball is heading outside the left boundary
+        if(ballX < 0) {
+           //If the paddle hits the ball then ball goes in the opposite direction.
+           //Value of delta1Y increases when the ball is hit closer to the edge of the paddle.  
+           if(ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT) {
+           	ballSpeedX = -ballSpeedX;
+                var delta1Y = ballY - (paddle1Y + PADDLE_HEIGHT / 2);
+                ballSpeedY = delta1Y * 0.40;
+           //Ball exits outside the left boundary and computer scores a point.
+           //Ball is reset back in the middle of the court.
+           } else {
+                 player2Score++;
+                 ballReset();
+           }
+        }
+
+        //If the ball is heading outside the right boundary
+        if(ballX > canvas.width) {
+          //If the paddle hits the ball then ball goes in opposite direction.
+          //Value of delta2Y increases when the ball is hit closer to the edge of the paddle.
+          if(ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT) {
+           	ballSpeedX = -ballSpeedX;  
+                var delta2Y = ballY - (paddle2Y + PADDLE_HEIGHT / 2);
+                ballSpeedY = delta2Y * 0.40;
+           //Ball exits outside the right boundary and human player scores a point.
+           //Ball is reset back in the middle of the court.
+           } else {
+                 player1Score++;
+                 ballReset();
+           }
+        }
+
+        //If ball is heading towards bottom boundary then ball hits the wall and goes up.
+        if(ballY > canvas.height) {
+	   ballSpeedY = -ballSpeedY;
+        }
+
+        //If ball is heading towards the top boundary then ball hits the wall and goes down.
+        if(ballY < 0) {
+	   ballSpeedY = -ballSpeedY;
+        }
+}
+
+//This function draws the net in center court.
+function drawNet() {
+	for(var i = 0; i < canvas.height; i = i + 30) {
+		colorRect(canvas.width / 2 - 1, i, 2, 20, 'brown');
+        }
+}
+
+//This function draws everything, including the black court, green and red paddles, yellow ball, and current scores for each player.
+function drawEverything() {
+        //shows winning screen after game is over
+         var diff1 = player1Score - player2Score;
+         var diff2 = player2Score - player1Score;
+        if(showingWinScreen) {
+            canvasContext.fillStyle = 'white';
+            if(player1Score >= WINNING_SCORE && diff1 >= 2) {
+                canvasContext.fillText("GAME OVER: You won!", 250, 200);
+            } else if(player2Score >= WINNING_SCORE && diff2 >= 2) {
+                canvasContext.fillText("GAME OVER: Computer won", 250, 200);
+            } 
+            canvasContext.fillText("Click to Start New Game", 250, 500);
+            return;
+        }
+      //draws the black screen
+      colorRect(0, 0, canvas.width, canvas.height, 'black');
+
+      //draws the left green paddle
+      colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE_HEIGHT, 'green');  
+
+      //draws the right red paddle
+      colorRect(canvas.width - PADDLE_THICKNESS, paddle2Y, PADDLE_THICKNESS, PADDLE_HEIGHT, 'red');
+
+      //draws the yellow ball 
+      colorCircle(ballX, ballY, 10, 'yellow');
+
+      //displays the scores for player1 and player2
+      canvasContext.fillText(player1Score, 100, 100);
+      canvasContext.fillText(player2Score, canvas.width - 100, 100);
+
+      drawNet();
+}
+
+//This function draws the rectangle for the court and paddles.
+function colorRect(leftX, topY, width, height, drawColor) {
+	canvasContext.fillStyle = drawColor;
+        canvasContext.fillRect(leftX, topY, width, height);
+
+}
+
+//This function draws the circle for the ball.
+function colorCircle(centerX, centerY, radius, drawColor) {
+      canvasContext.fillStyle = drawColor;
+      canvasContext.beginPath();
+      canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+      canvasContext.fill();
+
+}
+
+//This function resets the ball in center court after a player scores a point or to begin a new game.
+function ballReset() {    
+        if(player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) { 
+		showingWinScreen = true;
+        }
+        ballSpeedX = -ballSpeedX;
+	ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+}
+        
+</script>
+
+</html>
