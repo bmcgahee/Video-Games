@@ -1,0 +1,388 @@
+//Author: Ben McGahee
+//Title: SQUARE-LITE
+//Date: 10/28/2015
+//Object: Square-Lite is a video game that is related to the classic breakout game by Atari decades ago.  
+//The object of the game is to hit the black squares with a ball using a paddle to earn points.
+//If you score at least a 1000 points then you win the game.  
+//If you score more than a 1000 points then you earn bonus points in addition to the maximum score.  
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <meta charset = "utf-8">
+    <link rel = "stylesheet" href = "gamestyle.css">
+    <title>Square-Lite</title>
+</head>
+
+<body>
+
+<h1><i>SQUARE-LITE:  Watch the black squares light up!</i></h1>
+
+//sets up the canvas width and height
+<canvas id = "screen" width = "400" height = "300"></canvas>
+
+<script>
+
+//declare the screen and context variables
+var screen = document.getElementById("screen");
+var context = screen.getContext("2d");
+
+//declare and initialize ball attributes such as radius and (x, y) location of the ball
+var radius = 10;
+var xBall = screen.width / 2;
+var yBall = screen.height - 20;
+
+//declare and initialize ball speed in the x and y directions
+var xBallSpeed = 2;
+var yBallSpeed = -2.5;
+
+//size of each square is 30 units by 30 units
+var squareSize = 30;
+
+//declare height and width of the paddle and set initial (x, y) location of the paddle
+var padHeight = 8;
+var padWidth = 80;
+var xPad = screen.width / 2;
+var yPad = screen.height - padHeight;
+
+//declare Boolean values for left and right arrow keys
+var rightKey = false;
+var leftKey = false;
+
+//declare and initialize number of lives, score, and maximum score for the game
+var lives = 3;
+var score = 0;
+var maxScore = 1000;
+
+
+//draws the ball
+function ball() {
+    context.beginPath();
+    context.arc(xBall, yBall, radius, 0, Math.PI*2);
+    context.fillStyle = "yellow";
+    context.fill();
+    context.closePath();
+}
+
+//draws the paddle
+function paddle() {
+    context.beginPath();
+    context.rect(xPad, yPad, padWidth, padHeight);
+    context.fillStyle = "brown";
+    context.fill();
+    context.closePath();
+}
+
+//draws black square in top left corner
+function square1() {
+    context.beginPath();
+    context.rect(0, 0, squareSize, squareSize);
+    context.fillStyle = "black";
+    context.fill();
+    context.closePath();
+}
+
+//draws black square in top right corner
+function square2() {
+    context.beginPath();
+    context.rect(370, 0, squareSize, squareSize);
+    context.fillStyle = "black";
+    context.fill();
+    context.closePath();
+}
+
+//draws center black square
+function square3() {
+    context.beginPath();
+    context.rect(175, 0, squareSize, squareSize);
+    context.fillStyle = "black";
+    context.fill();
+    context.closePath();
+}
+
+//draws bottom left black square
+function square4() {
+    context.beginPath();
+    context.rect(35, 120, squareSize, squareSize);
+    context.fillStyle = "black";
+    context.fill();
+    context.closePath();
+}
+
+//draws bottom right black square
+function square5() {
+    context.beginPath();
+    context.rect(335, 120, squareSize, squareSize);
+    context.fillStyle = "black";
+    context.fill();
+    context.closePath();
+}
+
+//draws top left corner yellow square
+function randSquare1() {
+    context.beginPath();
+    context.rect(0, 0, squareSize, squareSize);
+    context.fillStyle = "yellow";
+    context.fill();
+    context.closePath();
+}
+
+//draws center yellow square
+function randSquare2() {
+    context.beginPath();
+    context.rect(175, 0, squareSize, squareSize);
+    context.fillStyle = "yellow";
+    context.fill();
+    context.closePath();
+}
+
+//draws top right corner yellow square
+function randSquare3() {
+    context.beginPath();
+    context.rect(370, 0, squareSize, squareSize);
+    context.fillStyle = "yellow";
+    context.fill();
+    context.closePath();
+}
+
+//draws bottom left yellow square
+function randSquare4() {
+    context.beginPath();
+    context.rect(35, 120, squareSize, squareSize);
+    context.fillStyle = "yellow";
+    context.fill();
+    context.closePath();
+}
+
+//draws bottom right yellow square
+function randSquare5() {
+    context.beginPath();
+    context.rect(335, 120, squareSize, squareSize);
+    context.fillStyle = "yellow";
+    context.fill();
+    context.closePath();
+}
+
+//introduction to the game
+function intro() {
+    alert("Welcome to SQUARE-LITE.  Hit the black squares with the ball and light them up!");
+    alert("Here are the rules.");
+    alert("You have 3 lives.  If the ball hits the ground then you lose a life.");
+    alert("The top left and right squares are worth 5 points.  The bottom left and right squares are worth 10 points.");
+    alert("The center square is worth 20 points and an extra life!");
+    alert("If you score at least 1000 points then you win the game!  50 bonus points are awarded for each point above the maximum score.");
+}
+
+//introduce the game
+intro();
+
+//draws all of the game elements on the screen such as ball, paddle, squares, current score, number of lives, etc
+//also accounts for the movements of the ball in relation to the paddle, winning condition, and left/right arrow keys
+function fillScreen() {
+    context.clearRect(0, 0, screen.width, screen.height);
+
+    ball();
+    paddle();
+    square1();
+    square2();
+    square3(); 
+    square4();
+    square5();
+    drawLives();
+    drawScore();
+    winCondition();
+
+    xBall += xBallSpeed;
+    yBall += yBallSpeed;
+
+    ballInPlay();
+    squareLite();
+    keys();
+}
+
+//tells the ball where to go in both the x and y directions based on certain conditions
+function ballInPlay() {
+        //if ball hits left wall then the ball goes right
+        //if ball hits the right wall then the ball goes left
+	if(xBall + xBallSpeed < radius || xBall + xBallSpeed > screen.width - radius) {
+        xBallSpeed = -xBallSpeed;
+    }
+
+        //if ball hits top wall then the ball goes down
+    	if(yBall + yBallSpeed < radius)
+       		 yBallSpeed = -yBallSpeed;
+        //if ball hits the bottom wall
+     	else if(yBall + yBallSpeed > screen.height - radius) {
+                //if ball is within the width of the paddle in x direction
+           	if(xBall > xPad && xBall < xPad + padWidth) {
+                        //and if ball is within the height of the paddle in y direction
+             		if(yBall = yBall - padHeight) {
+                                //ball hits the paddle and goes up
+                  		yBallSpeed = -yBallSpeed;
+              		}
+           	 }
+                //otherwise, ball hits the ground
+            	else {
+                        //subtract 1 life
+                	lives--;
+                        //if there are no more lives then the game is over and alert final score and reload the game
+                	if(lives == 0) {
+                  	 alert("GAME OVER");
+                   	alert("Your final score is: " + score + " points");
+                   	document.location.reload();
+                }
+                //if lives do exist then alert the player that the ball hits the ground and how many lives remain
+                //then ask player if he or she is ready to begin new life
+                if(lives > 0) {
+                   alert("Oops! The ball hit the ground.");
+                   if(lives == 1) {
+                      alert("You have " + lives + " life remaining.");
+                   }
+                   else {
+                       alert("You have " + lives + " lives remaining.");
+                   }
+                   alert("Ready?");
+                }
+                //resets the ball in the center of the screen and initializes x and y speed
+              	xBall = screen.width / 2;
+              	yBall = screen.height - 20;
+              	xBallSpeed = -2;
+              	yBallSpeed = -2.5;
+                padX = (screen.width - padWidth) / 2;
+              }  
+          }
+}
+
+//If the ball hits the top left black square then make the square light up in yellow, increase the score by 5,
+//and change the ball speed in both the x and y directions
+function squareLite() {
+    if(xBall >= 0 && xBall <= squareSize && yBall >= 0 && yBall <= squareSize) {
+                randSquare1();
+                score += 5;
+                xBallSpeed = -xBallSpeed;
+                yBallSpeed = -1.1 * yBallSpeed;
+    }
+
+    //similar to previous condition except it's the center square that lights up in yellow, increases the score by 20,
+    //and gives the player an extra life
+    if(xBall >= 175 && xBall <= 205 & yBall >= 0 && yBall <= squareSize) {
+                randSquare2();
+                alert("Extra Life!");
+                score += 20;
+                lives++;
+                xBallSpeed = -xBallSpeed;
+                yBallSpeed = -1.1 * yBallSpeed;
+    }
+
+    //similar to before except it's the top right black square that lights up in yellow, and increases the score by 5
+    if(xBall >= 370 && xBall <= screen.width && yBall >= 0 && yBall <= squareSize) {
+                randSquare3();
+                score += 5;
+                xBallSpeed = -xBallSpeed;
+                yBallSpeed = -1.1 * yBallSpeed;
+    }
+
+    //similar to before except it's the bottom left black square that lights up in yellow, and increases the score by 10
+    if(xBall >= 35 && xBall <= squareSize + 35 && yBall >= 120 && yBall <= 150) {
+		randSquare4();
+                score += 10;
+                xBallSpeed = -xBallSpeed;
+                yBallSpeed = -1.1 * yBallSpeed;
+    }
+
+    //similar to before except it's the bottom right black square with 10 point increase
+    if(xBall >= 335 && xBall <= squareSize + 335 && yBall >= 120 && yBall <= 150) {
+		randSquare5();
+                score += 10;
+                xBallSpeed = -xBallSpeed;
+                yBallSpeed = -1.1 * yBallSpeed;
+    }
+}
+
+//controls the left and right key movements of the paddle
+function keys() {
+    if(rightKey && xPad < screen.width - padWidth) {
+   	xPad += 7;
+    }  
+
+    if(leftKey && xPad > 0) {
+         xPad -= 7;
+    }
+}
+
+//event listener for the mouse
+document.addEventListener("mousemove", mouse, false);
+
+//fires off the mouse event to locate its x and y coordinates on the screen
+function mouse(event) {
+    var Xcoordinate = event.clientX - screen.offsetLeft;
+    if(Xcoordinate > 0 && Xcoordinate < screen.width) {
+        xPad = Xcoordinate - padWidth / 2;
+    }
+}
+
+//draws the number of lives on the screen
+function drawLives() {
+  context.font = "16px Times New Roman";
+  context.fillStyle = "white";
+  context.fillText("Lives: " + lives, 10, 260);
+}
+
+//draws the current score on the screen
+function drawScore() {
+   context.font = "16px Times New Roman";
+   context.fillStyle = "white";
+   context.fillText("Score: " + score, 10, 280);
+}
+
+//displays the winning condition when the player reaches at least 1000 points in the game
+//displays bonus points and final score at the end of the game
+//if the player gets above 1000 points then he or she is awarded 50 points for each extra point.
+//after winning condition is displayed then the game reloads to be played again
+function winCondition() {
+        var bonus = 50 * (score - maxScore);
+        var finalScore = score + bonus;  
+
+        if(score >= maxScore) {
+            alert("CONGRATULATIONS, YOU WIN!");
+            alert("You earned: " + bonus + " bonus points");
+            alert("Your final score is: " + finalScore + " points");
+            document.location.reload();
+         }
+        
+}
+
+//event listeners for the left and right arrow keys
+document.addEventListener("keydown", downKeyHandler, false);
+document.addEventListener("keyup", upKeyHandler, false);
+
+//when the left and right arrow keys are pressed down then the leftKey and rightKey values are true
+function downKeyHandler(event) {
+    if(event.keyCode == 39) {
+        rightKey = true;
+    }
+    else if(event.keyCode == 37) {
+        leftKey = true;
+    }
+}
+
+//when the left and right arrows are not pressed down then the leftKey and rightKey values are false
+function upKeyHandler(event) {
+    if(event.keyCode == 39) {
+        rightKey = false;
+    }
+    else if(event.keyCode == 37) {
+        leftKey = false;
+    }
+}
+
+//this is the animation that draw all the game elements and their movements at 10 ms intervals
+setInterval(fillScreen, 10);
+
+</script>
+
+</body>
+
+</html>
