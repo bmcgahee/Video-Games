@@ -1,0 +1,304 @@
+//Author: Ben McGahee
+//Title: Hidden Points
+//Date: 3/15/2016
+//Language: QBASIC
+//Purpose:  This is a 1 player 2D game where you navigate a vessel (green circle) to find the center points of hidden circles.  
+//Each point you find will indicate a beep sound and you earn points.  The green circle runs on limited fuel, so you will have
+//to visit the fuel station to refuel the vessel.  The object of the game is to get 5,000 points before your fuel runs out.  
+
+//Declaring all the game variables.
+DIM pressKey AS STRING
+
+DIM bigRadius AS INTEGER
+DIM xValue AS INTEGER
+DIM yValue AS INTEGER
+
+DIM smallRadiusOne AS INTEGER
+DIM xValueOne AS INTEGER
+DIM yValueOne AS INTEGER
+
+DIM smallRadiusTwo AS INTEGER
+DIM xValueTwo AS INTEGER
+DIM yValueTwo AS INTEGER
+
+DIM smallRadiusThree AS INTEGER
+DIM xValueThree AS INTEGER
+DIM yValueThree AS INTEGER
+
+DIM smallRadiusFour AS INTEGER
+DIM xValueFour AS INTEGER
+DIM yValueFour AS INTEGER
+
+DIM smallRadiusFive AS INTEGER
+DIM xValueFive AS INTEGER
+DIM yValueFive AS INTEGER
+
+DIM smallRadiusSix AS INTEGER
+DIM xValueSix AS INTEGER
+DIM yValueSix AS INTEGER
+
+DIM smallRadiusSeven AS INTEGER
+DIM xValueSeven AS INTEGER
+DIM yValueSeven AS INTEGER
+
+DIM smallRadiusEight AS INTEGER
+DIM xValueEight AS INTEGER
+DIM yValueEight AS INTEGER
+
+DIM smallRadiusNine AS INTEGER
+DIM xValueNine AS INTEGER
+DIM yValueNine AS INTEGER
+
+DIM smallRadiusTen AS INTEGER
+DIM xValueTen AS INTEGER
+DIM yValueTen AS INTEGER
+
+DIM xBoxOne AS INTEGER
+DIM xBoxTwo AS INTEGER
+DIM yBoxOne AS INTEGER
+DIM yBoxTwo AS INTEGER
+
+DIM xMidPt AS INTEGER
+DIM yMidPt AS INTEGER
+
+DIM score AS INTEGER
+DIM maxScore AS INTEGER
+DIM fuel AS INTEGER
+DIM reFuel AS INTEGER
+DIM count AS INTEGER
+DIM maxHit AS INTEGER
+
+DIM hitOne AS INTEGER
+DIM hitTwo AS INTEGER
+DIM hitThree AS INTEGER
+DIM hitFour AS INTEGER
+DIM hitFive AS INTEGER
+DIM hitSix AS INTEGER
+DIM hitSeven AS INTEGER
+DIM hitEigh AS INTEGER
+DIM hitNine AS INTEGER
+DIM hitTen AS INTEGER
+
+DIM gameOver AS STRING
+DIM winning AS STRING
+
+//Assigning values to the game variables.
+bigRadius = 20
+xValue = 280
+yValue = 170
+
+smallRadiusOne = 10
+xValueOne = 35
+yValueOne = 25
+
+smallRadiusTwo = 11
+xValueTwo = 50
+yValueTwo = 60
+
+smallRadiusThree = 10
+xValueThree = 90
+yValueThree = 160
+
+smallRadiusFour = 11
+xValueFour = 170
+yValueFour = 110
+
+smallRadiusFive = 10
+xValueFive = 175
+yValueFive = 55
+
+smallRadiusSix = 11
+xValueSix = 190
+yValueSix = 80
+
+smallRadiusSeven = 10
+xValueSeven = 250
+yValueSeven = 120
+
+smallRadiusEight = 11
+xValueEight = 275
+yValueEight = 90
+
+smallRadiusNine = 10
+xValueNine = 30
+yValueNine = 105
+
+smallRadiusTen = 11
+xValueTen = 100
+yValueTen = 50
+
+xValueTwo = 50
+yValueTwo = 60
+xBoxOne = 150
+xBoxTwo = 80
+yBoxOne = 120
+yBoxTwo = 90
+
+//This is the midpoint of the fuel station where the vessel refuels.
+xMidPt = (xBoxOne + xBoxTwo) / 2
+yMidPt = (yBoxOne + yBoxTwo) / 2
+
+score = 0
+maxScore = 5000
+count = 0
+
+fuel = 10000
+reFuel = 5
+
+hitOne = 0
+hitTwo = 0
+hitThree = 0
+hitFour = 0
+hitFive = 0
+hitSix = 0
+hitSeven = 0
+hitEight = 0
+hitNine = 0
+hitTen = 0
+hitMax = 10
+
+
+gameOver = "false"
+winning = "false"
+
+red = _RGB(255, 0, 0)
+green = _RGB(0, 255, 0)
+black = _RGB(0, 0, 0)
+
+SCREEN 13
+
+CLS
+
+//The game play runs in the DO UNTIL LOOP
+DO
+    pressKey = UCASE$(INKEY$)
+
+    //Moves the vessel up one unit by using the up arrow key.
+    IF pressKey = CHR$(0) + CHR$(72) AND yValue > 25 THEN
+        CLS
+        yValue = yValue - 1
+        fuel = fuel - 1
+    //Moves the vessel down one unit by using the down arrow key.
+    ELSEIF pressKey = CHR$(0) + CHR$(80) AND yValue < 178 THEN
+        CLS
+        yValue = yValue + 1
+        fuel = fuel - 1
+    //Moves the vessel left one unit by using the left arrow key.
+    ELSEIF pressKey = CHR$(0) + CHR$(75) AND xValue > 28 THEN
+        CLS
+        xValue = xValue - 1
+        fuel = fuel - 1
+    //Moves the vessel right one unit by using the right arrow key.
+    ELSEIF pressKey = CHR$(0) + CHR$(77) AND xValue < 290 THEN
+        CLS
+        xValue = xValue + 1
+        fuel = fuel - 1
+    END IF
+
+    //Draws the vessel and the hidden circles.
+    CIRCLE (xValue, yValue), bigRadius, green
+    CIRCLE (xValueOne, yValueOne), smallRadiusOne, black
+    CIRCLE (xValueTwo, yValueTwo), smallRadiusTwo, black
+    CIRCLE (xValueThree, yValueThree), smallRadiusThree, black
+    CIRCLE (xValueFour, yValueFour), smallRadiusFour, black
+    CIRCLE (xValueFive, yValueFive), smallRadiusFive, black
+    CIRCLE (xValueSix, yValueSix), smallRadiusSix, black
+    CIRCLE (xValueSeven, yValueSeven), smallRadiusSeven, black
+    CIRCLE (xValueEight, yValueEight), smallRadiusEight, black
+    CIRCLE (xValueNine, yValueNine), smallRadiusNine, black
+    CIRCLE (xValueTen, yValueTen), smallRadiusTen, black
+
+    //Draws the red fuel station.
+    LINE (xBoxOne, yBoxOne)-(xBoxTwo, yBoxTwo), red, BF
+
+    //Player gets 10 points for hitting the center of first circle.  
+    //Note: The maximum number of hits for each circle is 10.
+    IF xValue = xValueOne AND yValue = yValueOne AND hitOne <= hitMax THEN
+        BEEP
+        score = score + 10
+        hitOne = hitOne + 1
+    //Player gets 20 points for hitting the center of the second circle.
+    ELSEIF xValue = xValueTwo AND yValue = yValueTwo AND hitTwo <= hitMax THEN
+        BEEP
+        score = score + 20
+        hitTwo = hitTwo + 1
+    //Player gets 30 points for hitting the center of the third circle.
+    ELSEIF xValue = xValueThree AND yValue = yValueThree AND hitThree <= hitMax THEN
+        BEEP
+        score = score + 30
+        hitThree = hitThree + 1
+    //Player gets 40 points for hitting the center of the fourth circle.
+    ELSEIF xValue = xValueFour AND yValue = yValueFour AND hitFour <= hitMax THEN
+        BEEP
+        score = score + 40
+        hitFour = hitFour + 1
+    //Player gets 50 points for hitting the center of the fifth circle.
+    ELSEIF xValue = xValueFive AND yValue = yValueFive AND hitFive <= hitMax THEN
+        BEEP
+        score = score + 50
+        hitFive = hitFive + 1
+    //Player gets 60 points for hitting the center of the sixth circle.
+    ELSEIF xValue = xValueSix AND yValue = yValueSix AND hitSix <= hitMax THEN
+        BEEP
+        score = score + 60
+        hitSix = hitSix + 1
+    //Player gets 70 points for hitting the center of the seventh circle.
+    ELSEIF xValue = xValueSeven AND yValue = yValueSeven AND hitSeven <= hitMax THEN
+        BEEP
+        score = score + 70
+        hitSeven = hitSeven + 1
+    //Player gets 80 points for hitting the center of the eight circle.
+    ELSEIF xValue = xValueEight AND yValue = yValueEight AND hitEight <= hitMax THEN
+        BEEP
+        score = score + 80
+        hitEight = hitEight + 1
+    //Player gets 90 points for hitting the center of the ninth circle.
+    ELSEIF xValue = xValueNine AND yValue = yValueNine AND hitNine <= hitMax THEN
+        BEEP
+        score = score + 90
+        hitNine = hitNine + 1
+    //Player gets 100 points for hitting the center of the tenth circle.
+    ELSEIF xValue = xValueTen AND yValue = yValueTen AND hitTen <= hitMax THEN
+        BEEP
+        score = score + 100
+        hitTen = hitTen + 1
+    //Player refuels at the fuel station.
+    //Note:  Player uses 1 refuel each time at the fuel station and only has 5 refuels.  
+    ELSEIF xValue = xMidPt AND yValue = yMidPt AND reFuel > 0 THEN
+        BEEP
+        fuel = fuel + score
+        score = score + 300
+        reFuel = reFuel - 1
+    END IF
+
+    //Displays the score, fuel amount, and number of refuels in the top right hand corner of the screen.
+    _PRINTSTRING (200, 5), "Score: " + STR$(score)
+    _PRINTSTRING (200, 15), "Fuel: " + STR$(fuel)
+    _PRINTSTRING (200, 25), "ReFuel: " + STR$(reFuel)
+
+    //If the vessel is empty then it's game over.
+    IF fuel = 0 THEN
+        gameOver = "true"
+        _PRINTSTRING (200, 40), "GAME OVER"
+    END IF
+
+    //Player wins the game if their score is at least 5,000 points.  You will hear three beeps.
+    IF score >= maxScore AND fuel >= 0 THEN
+        winning = "true"
+        BEEP
+        BEEP
+        BEEP
+        _PRINTSTRING (200, 40), "YOU WIN!"
+    END IF
+
+//Play continues until the escape key is pressed or if the player wins or loses the game.
+LOOP UNTIL pressKey = CHR$(27) OR gameOver = "true" OR winning = "true"
+
+
+
+
+
+
+
+
+
